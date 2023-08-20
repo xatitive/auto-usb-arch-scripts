@@ -5,12 +5,12 @@
 _drive=$1
 _name=$2
 
-# /dev/sdb2
-_boot=${_drive}2
+# /dev/sdb1
+_boot=${_drive}1
 # EFI folder tends to require ~50mb
 _bootsize=4G
-# /dev/sdb3
-_root=${_drive}3
+# /dev/sdb2
+_root=${_drive}2
 # --------------------------------------------------------
 
 # sanity checking ----------------------------------------
@@ -65,7 +65,7 @@ parted --script ${_drive} -a optimal mkpart ESP fat32 5M ${_bootsize}
 # 2 /
 parted --script ${_drive} -a optimal mkpart primary ext4 ${_bootsize} 100%
 
-parted --script ${_drive} set 2 boot on
+parted --script ${_drive} set 1 boot on
 sync
 # --------------------------------------------------------
 
@@ -86,7 +86,7 @@ mount ${_boot} /mnt/boot
 # --------------------------------------------------------
 
 # install it ---------------------------------------------
-t2strap /mnt base linux-firmware iwd grub efibootmgr
+t2strap /mnt base linux-firmware iwd grub efibootmgr    
 # --------------------------------------------------------
 
 # configure it -------------------------------------------
