@@ -44,16 +44,10 @@ if [[ ! -z "$(cat /proc/mounts | grep ${_drive})" ]]; then
 fi
 # make sure we have all our tools installed
 if [[ -z "$( pacman -Q | grep dosfstools )" ]]; then
-    pacman -S dosfstools --noconfirm
-fi
-if [[ -z "$( pacman -Q | grep exfat-utils )" ]]; then
-    pacman -S exfat-utils --noconfirm
-fi
-if [[ -z "$( pacman -Q | grep exfat-utils )" ]]; then
-    pacman -S exfat-utils --noconfirm
+    pacman -Sy dosfstools --noconfirm
 fi
 if [[ -z "$( pacman -Q | grep arch-install-scripts )" ]]; then
-    pacman -S arch-install-scripts --noconfirm
+    pacman -Sy arch-install-scripts --noconfirm
 fi
 # --------------------------------------------------------
 

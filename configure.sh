@@ -11,6 +11,8 @@ _journalsize=8M
 
 _grub="quiet splash intel_iommu=on iommu=pt pcie_ports=compat"
 
+_module="apple-bce"
+
 # Set up hostname
 echo ${_name} > /etc/hostname
 
@@ -32,7 +34,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 systemctl enable NetworkManager
 
 # add apple-bce module to mkinitcpio
-sed -i 'sed -i 's/MODULES=()/MODULES=("apple-bce")/' /etc/mkinitcpio.conf
+sed -i "s/MODULES=()/MODULES=($_modules)/" mkinitcpio.conf
 mkinitcpio -p linux
 
 # We need some user input here, don't want to be passwordless
