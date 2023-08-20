@@ -9,6 +9,8 @@ _name=$2
 
 _journalsize=8M
 
+_grub="quiet splash intel_iommu=on iommu=pt pcie_ports=compat"
+
 # Set up hostname
 echo ${_name} > /etc/hostname
 
@@ -17,26 +19,20 @@ sed -i 's/#en_US.UTF-8/en_US.UTF-8/g' /etc/locale.gen
 locale-gen
 echo LANG=en_US.UTF-8 > /etc/locale.conf
 
-# Install bios bootloader
-grub-install --recheck --target=i386-pc ${_drive}
 # Install efi bootloader
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=grub --recheck
 # Now copy the grub bootloader to a special place
 # Some motherboards automatically boot from the special place.
+sed -i "s/GRUB_CMDLINE_LINUX=\"\"/$_grub/" /etc/default/grub
 mkdir -p /boot/EFI/boot
 cp /boot/EFI/grub/grubx64.efi /boot/EFI/boot/bootx64.efi
 grub-mkconfig -o /boot/grub/grub.cfg
 
 # Enable some services we'll need.
-systemctl enable gdm
 systemctl enable NetworkManager
 
-# visudo_editor was placed by our parent script
-# it just enables sudo access for wheel users.
-export EDITOR="/visudo_editor.sh" && visudo
-
-# remove autodetect hook
-sed -i 's/autodetect //g' /etc/mkinitcpio.conf
+# add apple-bce module to mkinitcpio
+sed -i 'sed -i 's/MODULES=()/MODULES=("apple-bce")/' /etc/mkinitcpio.conf
 mkinitcpio -p linux
 
 # We need some user input here, don't want to be passwordless

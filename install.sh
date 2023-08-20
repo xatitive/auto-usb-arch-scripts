@@ -60,14 +60,11 @@ fi
 # partition it -------------------------------------------
 # We don't scriptify this so that user can get a warning that the drive is going bye-bye
 parted ${_drive} mklabel gpt
-# 1 grub_bios
-parted --script ${_drive} -a optimal mkpart primary ext4 0M 5M
-# 2 efi and /boot
+# 1 efi and /boot
 parted --script ${_drive} -a optimal mkpart ESP fat32 5M ${_bootsize}
-# 3 /
+# 2 /
 parted --script ${_drive} -a optimal mkpart primary ext4 ${_bootsize} 100%
 
-parted --script ${_drive} set 1 bios_grub on
 parted --script ${_drive} set 2 boot on
 sync
 # --------------------------------------------------------
@@ -89,19 +86,15 @@ mount ${_boot} /mnt/boot
 # --------------------------------------------------------
 
 # install it ---------------------------------------------
-pacstrap -c /mnt base base-devel gnome grub xf86-video-intel xf86-video-nouveau xf86-video-ati xf86-input-synaptics vim efibootmgr intel-ucode networkmanager linux linux-headers linux-firmware mkinitcpio
+t2strap /mnt base linux-firmware iwd grub efibootmgr
 # --------------------------------------------------------
 
 # configure it -------------------------------------------
-genfstab -pU /mnt >> /mnt/etc/fstab
-#sed -i 's/relatime/compress=lzo,noatime,ssd/g' /mnt/etc/fstab
+genfstab -U /mnt >> /mnt/etc/fstab
 cp $(pwd)/configure.sh /mnt
-cp $(pwd)/visudo_editor.sh /mnt
 chmod +x /mnt/configure.sh
-chmod +x /mnt/visudo_editor.sh
 arch-chroot /mnt /configure.sh ${_drive} ${_name}
 rm /mnt/configure.sh
-rm /mnt/visudo_editor.sh
 # --------------------------------------------------------
 
 echo "All done! Attemping unmount..."
